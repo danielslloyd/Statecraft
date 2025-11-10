@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statecraft - Diplomacy Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1>Statecraft</h1>
+            <div id="game-info">
+                <span id="current-turn">Spring 1901</span>
+                <span id="phase">Movement Phase</span>
+            </div>
+        </header>
+
+        <div id="main-content">
+            <aside id="left-panel">
+                <div class="panel">
+                    <h2>Nations</h2>
+                    <div id="nations-list">
+                        <!-- Nations will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Orders</h2>
+                    <div id="orders-list">
+                        <!-- Orders will be populated by JS -->
+                    </div>
+                </div>
+            </aside>
+
+            <main id="game-board-container">
+                <canvas id="game-board" width="1200" height="900"></canvas>
+            </main>
+
+            <aside id="right-panel">
+                <div class="panel">
+                    <h2>Selected Unit</h2>
+                    <div id="unit-info">
+                        <p>No unit selected</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Order Type</h2>
+                    <div id="order-controls">
+                        <button id="btn-hold" class="order-btn">Hold</button>
+                        <button id="btn-move" class="order-btn active">Move</button>
+                        <button id="btn-support" class="order-btn">Support</button>
+                        <button id="btn-convoy" class="order-btn">Convoy</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Actions</h2>
+                    <button id="btn-clear-orders" class="action-btn">Clear All Orders</button>
+                    <button id="btn-resolve" class="action-btn primary">Resolve Turn</button>
+                </div>
+
+                <div class="panel">
+                    <h2>Game Log</h2>
+                    <div id="game-log">
+                        <p>Game started. Spring 1901 Movement Phase.</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="gameData.js"></script>
+    <script src="gameLogic.js"></script>
+    <script src="renderer.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

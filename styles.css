@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a2e;
+    color: #eee;
+    overflow: hidden;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    background-color: #16213e;
+    padding: 1rem 2rem;
+    border-bottom: 2px solid #0f3460;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 2rem;
+    color: #e94560;
+}
+
+#game-info {
+    display: flex;
+    gap: 2rem;
+    font-size: 1.1rem;
+}
+
+#game-info span {
+    padding: 0.5rem 1rem;
+    background-color: #0f3460;
+    border-radius: 4px;
+}
+
+#main-content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+#left-panel, #right-panel {
+    width: 300px;
+    background-color: #16213e;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+#left-panel {
+    border-right: 2px solid #0f3460;
+}
+
+#right-panel {
+    border-left: 2px solid #0f3460;
+}
+
+#game-board-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a2e;
+    overflow: auto;
+}
+
+#game-board {
+    background-color: #2a4a6a;
+    border: 2px solid #0f3460;
+    cursor: crosshair;
+}
+
+.panel {
+    background-color: #0f3460;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.panel h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    color: #e94560;
+    border-bottom: 1px solid #16213e;
+    padding-bottom: 0.5rem;
+}
+
+#nations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nation-item {
+    padding: 0.5rem;
+    background-color: #16213e;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nation-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #eee;
+}
+
+#orders-list {
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 0.9rem;
+}
+
+.order-item {
+    padding: 0.5rem;
+    background-color: #16213e;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid #e94560;
+}
+
+#unit-info {
+    padding: 0.5rem;
+}
+
+#order-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.order-btn {
+    padding: 0.75rem;
+    background-color: #16213e;
+    color: #eee;
+    border: 2px solid #1a1a2e;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.order-btn:hover {
+    background-color: #1a1a2e;
+    border-color: #e94560;
+}
+
+.order-btn.active {
+    background-color: #e94560;
+    border-color: #e94560;
+    color: white;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background-color: #16213e;
+    color: #eee;
+    border: 2px solid #1a1a2e;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    background-color: #1a1a2e;
+    border-color: #e94560;
+}
+
+.action-btn.primary {
+    background-color: #e94560;
+    border-color: #e94560;
+    color: white;
+    font-weight: bold;
+}
+
+.action-btn.primary:hover {
+    background-color: #d63447;
+    border-color: #d63447;
+}
+
+#game-log {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+#game-log p {
+    padding: 0.25rem;
+    border-bottom: 1px solid #16213e;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #16213e;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e94560;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #d63447;
+}
