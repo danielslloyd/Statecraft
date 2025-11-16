@@ -280,6 +280,47 @@ h3 {
     color: #667eea;
 }
 
+/* Order Mode Buttons */
+.order-modes {
+    display: flex;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.btn-mode {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #ddd;
+    background: white;
+    color: #666;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.btn-mode:hover {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.btn-mode.active {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.order-instructions {
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+    padding: 8px;
+    background: #f0f8ff;
+    border-radius: 4px;
+    margin: 10px 0;
+    text-align: center;
+}
+
 #orders-list {
     min-height: 100px;
     max-height: 200px;

@@ -1,22 +1,27 @@
 {
   "name": "statecraft-web-server",
-  "version": "1.0.0",
-  "description": "Web-based multiplayer Diplomacy game with bot players",
-  "main": "server.js",
+  "version": "2.0.0",
+  "description": "Web-based multiplayer Diplomacy game with database persistence and smart bot players",
+  "main": "server-db.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server-db.js",
+    "dev": "nodemon server-db.js",
+    "migrate": "node database/migrate.js",
+    "db:setup": "createdb statecraft && npm run migrate"
   },
   "keywords": [
     "diplomacy",
     "game",
     "multiplayer",
-    "bot"
+    "bot",
+    "postgresql"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "pg": "^8.11.3",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

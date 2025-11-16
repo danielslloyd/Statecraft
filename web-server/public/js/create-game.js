@@ -117,6 +117,25 @@ function setupEventListeners() {
     document.getElementById('create-game-btn').addEventListener('click', createGame);
     document.getElementById('copy-all-links').addEventListener('click', copyAllLinks);
     document.getElementById('start-game-btn').addEventListener('click', startGame);
+
+    // Update timer preview
+    document.getElementById('turn-duration').addEventListener('input', updateTimerPreview);
+    document.getElementById('turn-time-hour').addEventListener('change', updateTimerPreview);
+}
+
+function updateTimerPreview() {
+    const duration = document.getElementById('turn-duration').value;
+    const hour = parseInt(document.getElementById('turn-time-hour').value);
+
+    const timeLabels = {
+        0: 'midnight', 1: '1 AM', 2: '2 AM', 3: '3 AM',
+        6: '6 AM', 9: '9 AM', 12: 'noon',
+        15: '3 PM', 18: '6 PM', 20: '8 PM',
+        21: '9 PM', 22: '10 PM', 23: '11 PM'
+    };
+
+    document.getElementById('duration-display').textContent = duration;
+    document.getElementById('time-display').textContent = timeLabels[hour] || `${hour}:00`;
 }
 
 async function createGame() {
@@ -133,11 +152,21 @@ async function createGame() {
         playerConfigs[nation]?.isBot
     );
 
+    // Get turn timer settings
+    const turnDurationHours = parseInt(document.getElementById('turn-duration').value) || 24;
+    const turnTimeHour = parseInt(document.getElementById('turn-time-hour').value) || 0;
+
     try {
         const response = await fetch('/api/game/create', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nations, playerNames, botNations })
+            body: JSON.stringify({
+                nations,
+                playerNames,
+                botNations,
+                turnDurationHours,
+                turnTimeHour
+            })
         });
 
         const data = await response.json();

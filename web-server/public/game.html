@@ -13,6 +13,8 @@
             <div class="game-info">
                 <h1>Statecraft</h1>
                 <div id="turn-info"></div>
+                <div id="turn-deadline" style="font-size: 12px; color: #999; margin-top: 5px;"></div>
+                <div id="timer-settings" style="font-size: 12px; color: #999;"></div>
             </div>
             <div class="player-info">
                 <div id="player-nation"></div>
@@ -28,6 +30,18 @@
 
                 <div class="orders-panel">
                     <h3>Your Orders</h3>
+
+                    <!-- Order Mode Selection -->
+                    <div class="order-modes">
+                        <button id="mode-move" class="btn-mode active">Move</button>
+                        <button id="mode-hold" class="btn-mode">Hold</button>
+                        <button id="mode-support" class="btn-mode">Support</button>
+                        <button id="mode-convoy" class="btn-mode">Convoy</button>
+                    </div>
+                    <div id="order-instructions" class="order-instructions">
+                        Click your unit, then click destination to move
+                    </div>
+
                     <div id="orders-list"></div>
                     <button id="submit-orders-btn" class="btn-primary">Submit Orders</button>
                     <button id="clear-orders-btn" class="btn-secondary">Clear Orders</button>
@@ -60,6 +74,6 @@
     </div>
 
     <script src="/js/renderer.js"></script>
-    <script src="/js/game-client.js"></script>
+    <script src="/js/game-client-enhanced.js"></script>
 </body>
 </html>
