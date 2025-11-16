@@ -14,6 +14,12 @@
                 <span id="current-turn">Spring 1901</span>
                 <span id="phase">Movement Phase</span>
             </div>
+            <div id="map-selector">
+                <label for="map-select">Map:</label>
+                <select id="map-select">
+                    <option value="classic">Classic Diplomacy</option>
+                </select>
+            </div>
         </header>
 
         <div id="main-content">
@@ -59,6 +65,16 @@
                     <h2>Actions</h2>
                     <button id="btn-clear-orders" class="action-btn">Clear All Orders</button>
                     <button id="btn-resolve" class="action-btn primary">Resolve Turn</button>
+                    <button id="btn-save-game" class="action-btn">Save Game</button>
+                    <button id="btn-load-game" class="action-btn">Load Game</button>
+                </div>
+
+                <div class="panel">
+                    <h2>Messages</h2>
+                    <div id="messages-list">
+                        <!-- Messages will be populated by JS -->
+                    </div>
+                    <button id="btn-bot-action" class="action-btn">Bot Diplomacy</button>
                 </div>
 
                 <div class="panel">

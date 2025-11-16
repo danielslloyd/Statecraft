@@ -1,17 +1,70 @@
 // Main game controller
 
 let renderer = null;
+let botPlayers = {};
 
 // Initialize game
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('game-board');
     renderer = new Renderer(canvas);
+
+    // Load available maps
+    loadAvailableMaps();
+
+    // Initialize game state
     gameState = new GameState();
+
+    // Initialize bot players for each nation
+    for (const nation of Object.keys(NATIONS)) {
+        botPlayers[nation] = new BotPlayer(nation, gameState);
+    }
 
     setupEventListeners();
     updateUI();
     renderer.render();
 });
+
+// Map Management
+function loadAvailableMaps() {
+    const mapSelect = document.getElementById('map-select');
+
+    // Check localStorage for saved maps
+    const savedMaps = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('statecraft_map_')) {
+            const mapName = key.replace('statecraft_map_', '');
+            savedMaps.push(mapName);
+        }
+    }
+
+    // Add saved maps to dropdown
+    for (const mapName of savedMaps) {
+        const option = document.createElement('option');
+        option.value = mapName;
+        option.textContent = mapName;
+        mapSelect.appendChild(option);
+    }
+}
+
+function loadMapData(mapName) {
+    if (mapName === 'classic') {
+        // Use default map data (already loaded from gameData.js)
+        return;
+    }
+
+    const mapData = localStorage.getItem(`statecraft_map_${mapName}`);
+    if (mapData) {
+        try {
+            const parsed = JSON.parse(mapData);
+            // In a full implementation, we would override PROVINCES, ADJACENCIES, etc.
+            // For now, just log that we found it
+            addLog(`Loaded map: ${mapName}`, 'info');
+        } catch (e) {
+            addLog(`Error loading map: ${mapName}`, 'error');
+        }
+    }
+}
 
 function setupEventListeners() {
     const canvas = document.getElementById('game-board');
@@ -47,6 +100,14 @@ function setupEventListeners() {
     // Action buttons
     document.getElementById('btn-clear-orders').addEventListener('click', clearAllOrders);
     document.getElementById('btn-resolve').addEventListener('click', resolveTurn);
+    document.getElementById('btn-save-game').addEventListener('click', saveGame);
+    document.getElementById('btn-load-game').addEventListener('click', loadGame);
+    document.getElementById('btn-bot-action').addEventListener('click', triggerBotDiplomacy);
+
+    // Map selector
+    document.getElementById('map-select').addEventListener('change', (e) => {
+        loadMapData(e.target.value);
+    });
 }
 
 function handleCanvasClick(x, y) {
@@ -187,6 +248,9 @@ function updateUI() {
 
     // Update unit info
     updateUnitInfo();
+
+    // Update messages list
+    updateMessagesList();
 }
 
 function updateNationsList() {
@@ -282,4 +346,147 @@ function addLog(message, type = 'info') {
 
     container.appendChild(p);
     container.scrollTop = container.scrollHeight;
+}
+
+// Save/Load game functionality
+function saveGame() {
+    const saveData = gameState.saveToJSON();
+    const saveJson = JSON.stringify(saveData, null, 2);
+
+    // Create a download link
+    const blob = new Blob([saveJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `statecraft_save_${saveData.season}_${saveData.year}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    addLog('Game saved successfully!');
+}
+
+function loadGame() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const saveData = JSON.parse(event.target.result);
+                gameState.loadFromJSON(saveData);
+
+                addLog('Game loaded successfully!');
+                updateUI();
+                renderer.render();
+            } catch (error) {
+                addLog('Error loading game file!', 'error');
+                console.error(error);
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    input.click();
+}
+
+// Messaging system UI
+function updateMessagesList() {
+    const container = document.getElementById('messages-list');
+    container.innerHTML = '';
+
+    if (gameState.messages.length === 0) {
+        container.innerHTML = '<p style="color: #888; font-size: 12px;">No messages</p>';
+        return;
+    }
+
+    // Show most recent messages (limit to 5)
+    const recentMessages = gameState.messages.slice(-5);
+
+    for (const message of recentMessages) {
+        const div = document.createElement('div');
+        div.className = 'message-item';
+        div.style.cssText = 'border: 1px solid #444; padding: 8px; margin-bottom: 8px; border-radius: 4px; font-size: 12px;';
+
+        const fromNation = NATIONS[message.from].shortName;
+        const toNation = NATIONS[message.to].shortName;
+
+        let statusColor = '#888';
+        if (message.status === 'accepted') statusColor = '#51cf66';
+        if (message.status === 'rejected') statusColor = '#ff6b6b';
+        if (message.status === 'countered') statusColor = '#ffd43b';
+
+        div.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 4px;">
+                ${fromNation} → ${toNation}
+                <span style="color: ${statusColor}; font-size: 10px;">[${message.status}]</span>
+            </div>
+            <div style="font-size: 11px; color: #aaa;">${message.proposals[0].text}</div>
+            ${message.replies.length > 0 ? `<div style="font-size: 10px; color: #888; margin-top: 4px;">Reply: ${message.replies[0].response}</div>` : ''}
+        `;
+
+        // Add click to expand/reply (simplified - just show in log)
+        div.style.cursor = 'pointer';
+        div.addEventListener('click', () => {
+            showMessageDetails(message);
+        });
+
+        container.appendChild(div);
+    }
+}
+
+function showMessageDetails(message) {
+    const fromNation = NATIONS[message.from].name;
+    const toNation = NATIONS[message.to].name;
+
+    addLog(`--- Message from ${fromNation} to ${toNation} ---`);
+    addLog(`Type: ${message.type}`);
+    addLog(`Proposal: ${message.proposals[0].text}`);
+
+    for (const action of message.proposals[0].actions) {
+        const actionNation = NATIONS[action.nation].shortName;
+        addLog(`  - ${actionNation}: ${action.action}`);
+    }
+
+    if (message.replies.length > 0) {
+        addLog(`Reply: ${message.replies[0].response}`);
+        if (message.replies[0].counterProposal) {
+            addLog(`Counter: ${message.replies[0].counterProposal.text}`);
+        }
+    }
+
+    // If pending, allow quick reply
+    if (message.status === 'pending') {
+        addLog('Right-click message to reply (yes/no/counter)');
+    }
+}
+
+// Bot diplomacy
+function triggerBotDiplomacy() {
+    // Pick a random bot to send a message
+    const nations = Object.keys(NATIONS);
+    const randomNation = nations[Math.floor(Math.random() * nations.length)];
+    const bot = botPlayers[randomNation];
+
+    const message = bot.generateDiplomaticMessage();
+
+    addLog(`🤖 ${NATIONS[message.from].shortName} sent a diplomatic message to ${NATIONS[message.to].shortName}`);
+
+    updateUI();
+
+    // Sometimes have the recipient bot auto-respond after a delay
+    if (Math.random() > 0.5) {
+        setTimeout(() => {
+            const recipientBot = botPlayers[message.to];
+            recipientBot.evaluateMessage(message);
+            addLog(`🤖 ${NATIONS[message.to].shortName} replied to ${NATIONS[message.from].shortName}'s message`);
+            updateUI();
+        }, 1000);
+    }
 }
