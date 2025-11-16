@@ -10,6 +10,8 @@ class GameState {
         this.supplyCenters = {};
         this.selectedUnit = null;
         this.currentOrderType = 'move';
+        this.messages = [];
+        this.nextMessageId = 1;
 
         this.initializeGame();
     }
@@ -256,6 +258,80 @@ class GameState {
     getPhaseString() {
         return `${this.phase} Phase`;
     }
+
+    // Save/Load functionality
+    saveToJSON() {
+        return {
+            units: this.units,
+            orders: this.orders,
+            year: this.year,
+            season: this.season,
+            phase: this.phase,
+            supplyCenters: this.supplyCenters,
+            messages: this.messages,
+            nextMessageId: this.nextMessageId,
+            timestamp: new Date().toISOString()
+        };
+    }
+
+    loadFromJSON(data) {
+        this.units = data.units || [];
+        this.orders = data.orders || [];
+        this.year = data.year || 1901;
+        this.season = data.season || 'Spring';
+        this.phase = data.phase || 'Movement';
+        this.supplyCenters = data.supplyCenters || {};
+        this.messages = data.messages || [];
+        this.nextMessageId = data.nextMessageId || 1;
+        this.selectedUnit = null;
+    }
+
+    // Messaging system
+    createMessage(from, to, type, proposals) {
+        const message = {
+            id: this.nextMessageId++,
+            from: from,
+            to: to,
+            type: type, // 'alliance', 'action_proposal', 'reply'
+            proposals: proposals, // Array of proposed actions
+            status: 'pending', // 'pending', 'accepted', 'rejected', 'countered'
+            timestamp: this.getTurnString(),
+            replies: []
+        };
+        this.messages.push(message);
+        return message;
+    }
+
+    replyToMessage(messageId, response, counterProposal = null) {
+        const message = this.messages.find(m => m.id === messageId);
+        if (!message) return null;
+
+        const reply = {
+            response: response, // 'yes', 'no', 'counter'
+            counterProposal: counterProposal,
+            timestamp: this.getTurnString()
+        };
+
+        message.replies.push(reply);
+
+        if (response === 'yes') {
+            message.status = 'accepted';
+        } else if (response === 'no') {
+            message.status = 'rejected';
+        } else if (response === 'counter') {
+            message.status = 'countered';
+        }
+
+        return reply;
+    }
+
+    getMessagesForNation(nation) {
+        return this.messages.filter(m => m.to === nation || m.from === nation);
+    }
+
+    getPendingMessagesForNation(nation) {
+        return this.messages.filter(m => m.to === nation && m.status === 'pending');
+    }
 }
 
 // Order types
@@ -265,6 +341,136 @@ const ORDER_TYPES = {
     SUPPORT: 'support',
     CONVOY: 'convoy'
 };
+
+// Bot Player
+class BotPlayer {
+    constructor(nation, gameState) {
+        this.nation = nation;
+        this.gameState = gameState;
+    }
+
+    // Generate a diplomatic message proposing an alliance or action
+    generateDiplomaticMessage() {
+        const nations = Object.keys(NATIONS).filter(n => n !== this.nation);
+        const targetNation = nations[Math.floor(Math.random() * nations.length)];
+
+        // Determine message type
+        const messageTypes = ['alliance', 'action_proposal'];
+        const messageType = messageTypes[Math.floor(Math.random() * messageTypes.length)];
+
+        if (messageType === 'alliance') {
+            return this.proposeAlliance(targetNation);
+        } else {
+            return this.proposeAction(targetNation);
+        }
+    }
+
+    proposeAlliance(targetNation) {
+        const proposals = [
+            {
+                text: `Let's form an alliance against our common threats`,
+                actions: [
+                    {
+                        nation: this.nation,
+                        action: 'Support your moves into neutral territories'
+                    },
+                    {
+                        nation: targetNation,
+                        action: 'Support my defense on our shared border'
+                    }
+                ]
+            }
+        ];
+
+        return this.gameState.createMessage(
+            this.nation,
+            targetNation,
+            'alliance',
+            proposals
+        );
+    }
+
+    proposeAction(targetNation) {
+        // Find a potential coordinated action
+        const myUnits = this.gameState.getUnitsForNation(this.nation);
+        const theirUnits = this.gameState.getUnitsForNation(targetNation);
+
+        if (myUnits.length === 0 || theirUnits.length === 0) {
+            return this.proposeAlliance(targetNation);
+        }
+
+        // Pick random units for a proposal
+        const myUnit = myUnits[Math.floor(Math.random() * myUnits.length)];
+        const theirUnit = theirUnits[Math.floor(Math.random() * theirUnits.length)];
+
+        // Find adjacent provinces
+        const myAdjacencies = ADJACENCIES[myUnit.province] || [];
+        const theirAdjacencies = ADJACENCIES[theirUnit.province] || [];
+
+        const myTarget = myAdjacencies[Math.floor(Math.random() * myAdjacencies.length)];
+        const theirTarget = theirAdjacencies[Math.floor(Math.random() * theirAdjacencies.length)];
+
+        const proposals = [
+            {
+                text: `I propose coordinated moves this turn`,
+                actions: [
+                    {
+                        nation: this.nation,
+                        action: `Move ${UNIT_TYPES.ARMY} from ${PROVINCES[myUnit.province].name} to ${PROVINCES[myTarget].name}`,
+                        unitId: myUnit.id,
+                        from: myUnit.province,
+                        to: myTarget
+                    },
+                    {
+                        nation: targetNation,
+                        action: `Move ${UNIT_TYPES.ARMY} from ${PROVINCES[theirUnit.province].name} to ${PROVINCES[theirTarget].name}`,
+                        unitId: theirUnit.id,
+                        from: theirUnit.province,
+                        to: theirTarget
+                    }
+                ]
+            }
+        ];
+
+        return this.gameState.createMessage(
+            this.nation,
+            targetNation,
+            'action_proposal',
+            proposals
+        );
+    }
+
+    // Decide whether to accept, reject, or counter a message
+    evaluateMessage(message) {
+        // Simple decision making - random for now
+        const responses = ['yes', 'no', 'counter'];
+        const weights = [0.3, 0.4, 0.3]; // 30% yes, 40% no, 30% counter
+
+        const random = Math.random();
+        let cumulative = 0;
+
+        for (let i = 0; i < responses.length; i++) {
+            cumulative += weights[i];
+            if (random < cumulative) {
+                if (responses[i] === 'counter') {
+                    // Generate a counter proposal
+                    const counterProposal = {
+                        text: 'I propose a different arrangement',
+                        actions: message.proposals[0].actions.map(action => ({
+                            ...action,
+                            action: action.action + ' (modified)'
+                        }))
+                    };
+                    return this.gameState.replyToMessage(message.id, 'counter', counterProposal);
+                } else {
+                    return this.gameState.replyToMessage(message.id, responses[i]);
+                }
+            }
+        }
+
+        return this.gameState.replyToMessage(message.id, 'no');
+    }
+}
 
 // Create global game state
 let gameState = null;
