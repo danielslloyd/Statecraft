@@ -277,3 +277,23 @@ const STARTING_POSITIONS = {
 
 // Constants
 const WINNING_SUPPLY_COUNT = 18;
+
+const ORDER_TYPES = {
+    MOVE: 'move',
+    HOLD: 'hold',
+    SUPPORT: 'support',
+    CONVOY: 'convoy'
+};
+
+// Export for Node.js (for SMS server)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        NATIONS,
+        UNIT_TYPES,
+        ORDER_TYPES,
+        PROVINCES,
+        ADJACENCIES,
+        STARTING_POSITIONS,
+        WINNING_SUPPLY_COUNT
+    };
+}
