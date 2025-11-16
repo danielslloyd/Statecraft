@@ -474,3 +474,11 @@ class BotPlayer {
 
 // Create global game state
 let gameState = null;
+
+// Export for Node.js (for SMS server)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        GameState,
+        BotPlayer
+    };
+}
