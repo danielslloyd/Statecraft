@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statecraft - Diplomacy Game</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Statecraft - Diplomacy</h1>
+        <p class="subtitle">Create a new game and share unique URLs with your friends</p>
+
+        <div class="create-game-form">
+            <h2>Create New Game</h2>
+
+            <div class="nation-selection">
+                <h3>Select Nations</h3>
+                <div id="nations-list"></div>
+            </div>
+
+            <div class="player-config">
+                <h3>Configure Players</h3>
+                <div id="players-config"></div>
+            </div>
+
+            <button id="create-game-btn" class="btn-primary">Create Game</button>
+        </div>
+
+        <div id="game-links" class="game-links hidden">
+            <h2>Game Created!</h2>
+            <p>Share these links with your players:</p>
+            <div id="player-links"></div>
+
+            <div class="game-controls">
+                <button id="copy-all-links" class="btn-secondary">Copy All Links</button>
+                <button id="start-game-btn" class="btn-primary">Start Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/create-game.js"></script>
+</body>
+</html>

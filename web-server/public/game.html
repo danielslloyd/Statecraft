@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statecraft - Game</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Header -->
+        <div class="game-header">
+            <div class="game-info">
+                <h1>Statecraft</h1>
+                <div id="turn-info"></div>
+            </div>
+            <div class="player-info">
+                <div id="player-nation"></div>
+                <div id="player-stats"></div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="game-main">
+            <!-- Left Panel - Game Board -->
+            <div class="game-board-panel">
+                <canvas id="game-board" width="1200" height="900"></canvas>
+
+                <div class="orders-panel">
+                    <h3>Your Orders</h3>
+                    <div id="orders-list"></div>
+                    <button id="submit-orders-btn" class="btn-primary">Submit Orders</button>
+                    <button id="clear-orders-btn" class="btn-secondary">Clear Orders</button>
+                </div>
+            </div>
+
+            <!-- Right Panel - Messages & Players -->
+            <div class="sidebar">
+                <!-- Players List -->
+                <div class="players-panel">
+                    <h3>Players</h3>
+                    <div id="players-list"></div>
+                </div>
+
+                <!-- Messages -->
+                <div class="messages-panel">
+                    <h3>Messages</h3>
+                    <div id="messages-list"></div>
+
+                    <div class="message-input">
+                        <select id="message-recipient">
+                            <option value="all">Everyone</option>
+                        </select>
+                        <textarea id="message-text" placeholder="Type your message..."></textarea>
+                        <button id="send-message-btn" class="btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/renderer.js"></script>
+    <script src="/js/game-client.js"></script>
+</body>
+</html>
