@@ -3,93 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statecraft - Diplomacy Game</title>
+    <title>Statecraft — Diplomacy &amp; Risk</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="game-container">
-        <header>
-            <h1>Statecraft</h1>
-            <div id="game-info">
-                <span id="current-turn">Spring 1901</span>
-                <span id="phase">Movement Phase</span>
-            </div>
-            <div id="map-selector">
-                <label for="map-select">Map:</label>
-                <select id="map-select">
-                    <option value="classic">Classic Diplomacy</option>
-                </select>
-            </div>
+
+    <div id="screen-menu">
+        <h1 class="title">Statecraft</h1>
+        <p class="subtitle">Diplomacy &amp; Risk on arbitrary polygon maps</p>
+
+        <div class="mode-cards">
+            <section class="mode-card">
+                <h2>Diplomacy</h2>
+                <p>Seven great powers, simultaneous orders, supports and convoys.
+                   First to a majority of supply centers wins.</p>
+                <label>Map
+                    <select id="dip-map"></select>
+                </label>
+                <label>Play as
+                    <select id="dip-power"></select>
+                </label>
+                <button id="start-diplomacy" class="btn btn-primary">Start Diplomacy</button>
+            </section>
+
+            <section class="mode-card">
+                <h2>Risk</h2>
+                <p>Deal the territories, reinforce, roll dice, conquer continents.
+                   Last player standing wins.</p>
+                <label>Map
+                    <select id="risk-map"></select>
+                </label>
+                <label>Players
+                    <select id="risk-players">
+                        <option>2</option><option>3</option><option selected>4</option>
+                        <option>5</option><option>6</option>
+                    </select>
+                </label>
+                <label>Human players (hotseat)
+                    <select id="risk-humans">
+                        <option>0</option><option selected>1</option><option>2</option>
+                        <option>3</option><option>4</option><option>5</option><option>6</option>
+                    </select>
+                </label>
+                <button id="start-risk" class="btn btn-primary">Start Risk</button>
+            </section>
+        </div>
+        <p class="menu-footnote">Custom maps: see <code>MAP_REQUIREMENTS.md</code> — any polygon map
+           with a connection graph works in both modes.</p>
+    </div>
+
+    <div id="screen-game" class="hidden">
+        <header id="game-header">
+            <button id="btn-menu" class="btn">&larr; Menu</button>
+            <div id="game-title"></div>
+            <div id="turn-info"></div>
+            <label class="graph-toggle">
+                <input type="checkbox" id="toggle-graph"> Show connection graph
+            </label>
         </header>
-
-        <div id="main-content">
-            <aside id="left-panel">
-                <div class="panel">
-                    <h2>Nations</h2>
-                    <div id="nations-list">
-                        <!-- Nations will be populated by JS -->
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <h2>Orders</h2>
-                    <div id="orders-list">
-                        <!-- Orders will be populated by JS -->
-                    </div>
-                </div>
-            </aside>
-
-            <main id="game-board-container">
-                <canvas id="game-board" width="1200" height="900"></canvas>
-            </main>
-
-            <aside id="right-panel">
-                <div class="panel">
-                    <h2>Selected Unit</h2>
-                    <div id="unit-info">
-                        <p>No unit selected</p>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <h2>Order Type</h2>
-                    <div id="order-controls">
-                        <button id="btn-hold" class="order-btn">Hold</button>
-                        <button id="btn-move" class="order-btn active">Move</button>
-                        <button id="btn-support" class="order-btn">Support</button>
-                        <button id="btn-convoy" class="order-btn">Convoy</button>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <h2>Actions</h2>
-                    <button id="btn-clear-orders" class="action-btn">Clear All Orders</button>
-                    <button id="btn-resolve" class="action-btn primary">Resolve Turn</button>
-                    <button id="btn-save-game" class="action-btn">Save Game</button>
-                    <button id="btn-load-game" class="action-btn">Load Game</button>
-                </div>
-
-                <div class="panel">
-                    <h2>Messages</h2>
-                    <div id="messages-list">
-                        <!-- Messages will be populated by JS -->
-                    </div>
-                    <button id="btn-bot-action" class="action-btn">Bot Diplomacy</button>
-                </div>
-
-                <div class="panel">
-                    <h2>Game Log</h2>
-                    <div id="game-log">
-                        <p>Game started. Spring 1901 Movement Phase.</p>
-                    </div>
+        <div id="game-layout">
+            <div id="board-wrap"></div>
+            <aside id="side-panel">
+                <div id="panel-status"></div>
+                <div id="panel-controls"></div>
+                <div id="panel-log-wrap">
+                    <h3>Log</h3>
+                    <div id="panel-log"></div>
                 </div>
             </aside>
         </div>
     </div>
 
-    <script src="gameData.js"></script>
-    <script src="gameLogic.js"></script>
-    <script src="renderer.js"></script>
-    <script src="main.js"></script>
+    <script src="maps/classic-europe.js"></script>
+    <script src="maps/classic-world.js"></script>
+    <script src="js/mapcore.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/diplomacy.js"></script>
+    <script src="js/risk.js"></script>
+    <script src="js/dip-ui.js"></script>
+    <script src="js/risk-ui.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
